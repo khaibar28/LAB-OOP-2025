@@ -21,6 +21,7 @@ public class Soal5 {
         else if (isValidPassword(password)) { System.out.println("Password valid");}
         else { System.out.println("Password tidak valid! Password harus mengandung huruf kecil, huruf besar, dan angka.");}
 
+
         scanner.close();
     }
 }
