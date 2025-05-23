@@ -102,7 +102,7 @@ public class Game {
                     break;
                 default:
                     System.out.println("Pilihan tidak valid!");
-            }
+            }  
         } while (menu != 2);
 
         scanner.close();
