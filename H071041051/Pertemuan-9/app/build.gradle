@@ -1,0 +1,76 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.14'
+}
+
+group = 'com.example'
+version = '1.0.0'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_23
+    targetCompatibility = JavaVersion.VERSION_23
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // JavaFX dependencies for JDK 23
+    implementation 'org.openjfx:javafx-controls:24.0.1'
+    implementation 'org.openjfx:javafx-fxml:24.0.1'
+    
+    // Testing
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+}
+
+javafx {
+    version = '24.0.1'
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
+}
+
+application {
+    mainClass = 'gradle.PhotoAppMain'
+}
+
+run {
+    jvmArgs = [
+        '--add-opens', 'javafx.graphics/javafx.scene=ALL-UNNAMED',
+        '--add-opens', 'javafx.controls/javafx.scene.control=ALL-UNNAMED',
+        '--add-opens', 'javafx.base/com.sun.javafx.runtime=ALL-UNNAMED'  // Additional opens for JDK 23
+    ]
+}
+
+jar {
+    manifest {
+        attributes(
+            'Main-Class': 'gradle.PhotoAppMain'
+        )
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+task runDebug(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'gradle.PhotoAppMain'
+    jvmArgs = [
+        '--module-path', configurations.runtimeClasspath.asPath,
+        '--add-modules', 'javafx.controls,javafx.fxml',
+        '--add-opens', 'javafx.graphics/javafx.scene=ALL-UNNAMED',
+        '--add-opens', 'javafx.controls/javafx.scene.control=ALL-UNNAMED',
+        '--add-opens', 'javafx.base/com.sun.javafx.runtime=ALL-UNNAMED',
+        '-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005'
+    ]
+    debug = true
+}
+
+test {
+    useJUnitPlatform()
+    jvmArgs = [
+        '--add-opens', 'javafx.graphics/javafx.scene=ALL-UNNAMED'
+    ]
+}
